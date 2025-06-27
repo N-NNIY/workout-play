@@ -27,13 +27,13 @@ export default function PlaylistPage() {
   // 提取视频平台信息（用于显示）
   const getVideoInfo = (url: string) => {
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      return { platform: 'YouTube', icon: '🎥' }
+      return { platform: 'YouTube', icon: '' }
     } else if (url.includes('bilibili.com')) {
-      return { platform: 'B站', icon: '📺' }
+      return { platform: 'B站', icon: '' }
     } else if (url.includes('vimeo.com')) {
-      return { platform: 'Vimeo', icon: '🎬' }
+      return { platform: 'Vimeo', icon: '' }
     }
-    return { platform: '视频文件', icon: '🎞️' }
+    return { platform: '视频文件', icon: '' }
   }
 
   const addSegment = () => {
@@ -102,135 +102,224 @@ export default function PlaylistPage() {
   }
 
   return (
-    <div className="min-h-screen bg-green-50">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 relative overflow-hidden">
+      {/* 背景装饰 */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-violet-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-40 right-20 w-48 h-48 bg-purple-500/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-1/3 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative max-w-5xl mx-auto px-6 py-12">
         {/* 页面标题 */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-medium text-gray-800 mb-2">播放清单</h1>
-          <p className="text-gray-500 text-sm">创建专属视频训练列表</p>
-        </div>
-
-        {/* 添加视频表单 */}
-        <div className="bg-white rounded-lg border border-green-100 p-5 mb-6">
-          <div className="space-y-4">
-            <div>
-              <input
-                className={`w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-green-400 text-sm ${
-                  errors.url ? 'border-red-300' : 'border-gray-200'
-                }`}
-                placeholder="粘贴视频链接..."
-                value={url}
-                onChange={(e) => {
-                  setUrl(e.target.value)
-                  if (errors.url) setErrors({ ...errors, url: undefined })
-                }}
-              />
-              {errors.url && (
-                <p className="text-red-500 text-xs mt-1">{errors.url}</p>
-              )}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-violet-500 to-purple-600 rounded-2xl mb-6 shadow-2xl shadow-violet-500/25">
+            <div className="w-8 h-8 border-2 border-white rounded-lg flex items-center justify-center">
+              <div className="w-0 h-0 border-l-4 border-l-white border-y-2 border-y-transparent ml-1"></div>
             </div>
-
-            <button
-              className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600 transition-colors text-sm font-medium"
-              onClick={addSegment}
-            >
-              添加视频
-            </button>
           </div>
+          <h1 className="text-5xl font-black text-white mb-4 tracking-tight">
+            播放清单
+          </h1>
+          <p className="text-xl text-slate-400 max-w-md mx-auto leading-relaxed">
+            收集你喜欢的视频片段，创建专属训练清单
+          </p>
         </div>
 
-        {/* 播放清单 */}
-        {localList.length > 0 && (
-          <div className="bg-white rounded-lg border border-green-100 p-5 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="font-medium text-gray-800">视频列表</h2>
-                <p className="text-xs text-gray-500 mt-1">
-                  {localList.length} 个视频 · {formatTime(getTotalDuration())}
-                </p>
+        <div className="grid lg:grid-cols-5 gap-8">
+          {/* 左侧：添加视频表单 */}
+          <div className="lg:col-span-2">
+            <div className="sticky top-8">
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">添加视频</h3>
+                  <p className="text-slate-400 text-sm">支持 YouTube、B站等主流平台</p>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-3">视频链接</label>
+                    <div className="relative">
+                      <input
+                        className={`w-full bg-slate-800/50 border border-slate-700/50 px-5 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 text-white placeholder-slate-500 transition-all duration-300 ${errors.url ? 'border-red-500/50 ring-2 ring-red-500/50' : ''
+                          }`}
+                        placeholder="粘贴视频链接..."
+                        value={url}
+                        onChange={(e) => {
+                          setUrl(e.target.value)
+                          if (errors.url) setErrors({ ...errors, url: undefined })
+                        }}
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-slate-600 rounded-full"></div>
+                    </div>
+                    {errors.url && (
+                      <p className="text-red-400 text-sm mt-2 flex items-center gap-2">
+                        <div className="w-1 h-1 bg-red-400 rounded-full"></div>
+                        {errors.url}
+                      </p>
+                    )}
+                  </div>
+
+                  <button
+                    className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white py-4 rounded-2xl hover:from-violet-700 hover:to-purple-700 transition-all duration-300 font-semibold text-lg shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 hover:scale-[1.02] transform"
+                    onClick={addSegment}
+                  >
+                    添加到清单
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={clearAll}
-                className="text-red-500 hover:text-red-600 text-xs px-2 py-1 rounded border border-red-200 hover:bg-red-50"
-              >
-                清空
-              </button>
             </div>
+          </div>
 
-            <div className="space-y-2 mb-5">
-              {localList.map((seg, index) => (
-                <div
-                  key={index}
-                  className="border border-gray-100 p-3 rounded-md bg-gray-50 hover:bg-lime-50 hover:border-lime-200 transition-colors"
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1 min-w-0 mr-3">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs text-gray-400">{index + 1}</span>
-                        <span className="text-sm">{getVideoInfo(seg.url).icon}</span>
-                        <span className="text-xs text-gray-600">{getVideoInfo(seg.url).platform}</span>
+          {/* 右侧：播放清单 */}
+          <div className="lg:col-span-3">
+            {localList.length > 0 ? (
+              <div className="space-y-6">
+                {/* 清单头部 */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-xl">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-2xl font-bold text-white mb-1">我的清单</h2>
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="text-slate-400">{localList.length} 个视频</span>
+                        <div className="w-1 h-1 bg-slate-600 rounded-full"></div>
+                        <span className="text-slate-400">总时长 {formatTime(getTotalDuration())}</span>
                       </div>
-                      <p className="text-xs text-gray-500 truncate mb-1">
-                        {seg.url}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {formatTime(seg.start)}-{formatTime(seg.end)} ({formatTime(seg.end - seg.start)})
-                      </p>
                     </div>
-
-                    <div className="flex items-center gap-1">
-                      {index > 0 && (
-                        <button
-                          onClick={() => moveSegment(index, index - 1)}
-                          className="p-1 text-xs text-gray-400 hover:text-lime-600 hover:bg-lime-100 rounded"
-                          title="上移"
-                        >
-                          ↑
-                        </button>
-                      )}
-                      {index < localList.length - 1 && (
-                        <button
-                          onClick={() => moveSegment(index, index + 1)}
-                          className="p-1 text-xs text-gray-400 hover:text-lime-600 hover:bg-lime-100 rounded"
-                          title="下移"
-                        >
-                          ↓
-                        </button>
-                      )}
-                      <button
-                        onClick={() => removeSegment(index)}
-                        className="p-1 text-xs text-red-400 hover:text-red-600 hover:bg-red-100 rounded ml-1"
-                      >
-                        ×
-                      </button>
-                    </div>
+                    <button
+                      onClick={clearAll}
+                      className="text-slate-400 hover:text-red-400 px-4 py-2 rounded-xl border border-slate-700/50 hover:border-red-500/50 transition-all duration-300 text-sm font-medium"
+                    >
+                      清空全部
+                    </button>
                   </div>
                 </div>
-              ))}
+
+                {/* 视频列表 */}
+                <div className="space-y-4">
+                  {localList.map((seg, index) => (
+                    <div
+                      key={index}
+                      className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/8 hover:border-violet-500/30 transition-all duration-300 shadow-lg"
+                    >
+                      <div className="flex items-start gap-4">
+                        {/* 序号 */}
+                        <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-violet-500/20 to-purple-500/20 border border-violet-500/30 rounded-xl flex items-center justify-center">
+                          <span className="text-violet-300 font-bold text-sm">{index + 1}</span>
+                        </div>
+
+                        {/* 视频信息 */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xl">{getVideoInfo(seg.url).icon}</span>
+                              <span className="text-slate-300 font-medium text-sm">{getVideoInfo(seg.url).platform}</span>
+                            </div>
+                          </div>
+
+                          <p className="text-slate-500 text-sm font-mono truncate mb-4 bg-slate-800/30 px-3 py-2 rounded-lg">
+                            {seg.url}
+                          </p>
+
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 text-xs">
+                              <span className="text-slate-500">开始</span>
+                              <div className="bg-violet-500/20 text-violet-300 px-2 py-1 rounded-lg font-mono">
+                                {formatTime(seg.start)}
+                              </div>
+                            </div>
+                            <div className="w-4 h-px bg-slate-700"></div>
+                            <div className="flex items-center gap-2 text-xs">
+                              <span className="text-slate-500">结束</span>
+                              <div className="bg-purple-500/20 text-purple-300 px-2 py-1 rounded-lg font-mono">
+                                {formatTime(seg.end)}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs ml-auto">
+                              <span className="text-slate-500">时长</span>
+                              <div className="bg-slate-700/50 text-slate-300 px-2 py-1 rounded-lg font-mono">
+                                {formatTime(seg.end - seg.start)}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 操作按钮 */}
+                        <div className="flex-shrink-0 flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-all duration-300">
+                          {index > 0 && (
+                            <button
+                              onClick={() => moveSegment(index, index - 1)}
+                              className="w-9 h-9 text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-300 flex items-center justify-center"
+                              title="上移"
+                            >
+                              <div className="w-0 h-0 border-l-2 border-l-transparent border-r-2 border-r-transparent border-b-3 border-b-current"></div>
+                            </button>
+                          )}
+                          {index < localList.length - 1 && (
+                            <button
+                              onClick={() => moveSegment(index, index + 1)}
+                              className="w-9 h-9 text-slate-400 hover:text-white hover:bg-slate-700/50 rounded-lg transition-all duration-300 flex items-center justify-center"
+                              title="下移"
+                            >
+                              <div className="w-0 h-0 border-l-2 border-l-transparent border-r-2 border-r-transparent border-t-3 border-t-current"></div>
+                            </button>
+                          )}
+                          <button
+                            onClick={() => removeSegment(index)}
+                            className="w-9 h-9 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-300 flex items-center justify-center ml-1"
+                          >
+                            <div className="w-3 h-px bg-current"></div>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 播放按钮 */}
+                <div className="sticky bottom-8 z-10">
+                  <button
+                    className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white py-6 rounded-2xl hover:from-violet-700 hover:to-purple-700 transition-all duration-300 font-bold text-xl shadow-2xl shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-[1.02] transform flex items-center justify-center gap-4"
+                    onClick={startPlaying}
+                  >
+                    <div className="w-0 h-0 border-l-6 border-l-white border-y-4 border-y-transparent"></div>
+                    开始播放清单
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* 空状态 */
+              <div className="text-center py-20">
+                <div className="w-32 h-32 mx-auto bg-gradient-to-r from-slate-800 to-slate-700 rounded-3xl flex items-center justify-center mb-8 shadow-2xl">
+                  <div className="w-12 h-12 border-2 border-slate-600 rounded-xl flex items-center justify-center">
+                    <div className="w-0 h-0 border-l-6 border-l-slate-600 border-y-4 border-y-transparent ml-1"></div>
+                  </div>
+                </div>
+                <h3 className="text-3xl font-bold text-white mb-4">开始创建你的清单</h3>
+                <p className="text-slate-400 text-lg max-w-md mx-auto leading-relaxed">
+                  添加你喜欢的视频片段，打造专属的学习或娱乐播放列表
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 底部说明 */}
+        <div className="mt-16 text-center">
+          <div className="inline-flex items-center gap-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl px-8 py-4">
+            <div className="flex items-center gap-2 text-slate-400 text-sm">
+              <div className="w-2 h-2 bg-violet-500 rounded-full"></div>
+              <span>多平台支持</span>
             </div>
-
-            <button
-              className="w-full bg-lime-500 text-white py-3 rounded-md hover:bg-lime-600 transition-colors font-medium"
-              onClick={startPlaying}
-            >
-              开始播放
-            </button>
+            <div className="flex items-center gap-2 text-slate-400 text-sm">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>智能排序</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-400 text-sm">
+              <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+              <span>连续播放</span>
+            </div>
           </div>
-        )}
-
-        {/* 空状态提示 */}
-        {localList.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-300 text-4xl mb-3">📹</div>
-            <p className="text-gray-400 text-sm">还没有添加视频</p>
-          </div>
-        )}
-
-        {/* 使用说明 */}
-        <div className="bg-green-100 rounded-lg p-4 text-center">
-          <p className="text-green-700 text-xs">
-            支持 YouTube、B站、Vimeo 等平台 · 可调整播放顺序 · 自动循环播放
-          </p>
         </div>
       </div>
     </div>

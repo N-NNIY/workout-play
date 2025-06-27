@@ -13,13 +13,13 @@ export default function PlayerPage() {
   // 获取视频平台信息
   const getVideoInfo = (url: string) => {
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      return { platform: 'YouTube', icon: '🎥' }
+      return { platform: 'YouTube', icon: '' }
     } else if (url.includes('bilibili.com')) {
-      return { platform: 'B站', icon: '📺' }
+      return { platform: 'B站', icon: '' }
     } else if (url.includes('vimeo.com')) {
-      return { platform: 'Vimeo', icon: '🎬' }
+      return { platform: 'Vimeo', icon: '' }
     }
-    return { platform: '视频文件', icon: '🎞️' }
+    return { platform: '视频文件', icon: '' }
   }
 
   // 如果播放列表为空，重定向到播放列表页面
@@ -34,7 +34,7 @@ export default function PlayerPage() {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement)
     }
-    
+
     document.addEventListener('fullscreenchange', handleFullscreenChange)
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
   }, [])
@@ -43,7 +43,7 @@ export default function PlayerPage() {
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement) return
-      
+
       switch (e.key) {
         case ' ':
           e.preventDefault()
@@ -134,53 +134,49 @@ export default function PlayerPage() {
   }
 
   return (
-    <div className={`min-h-screen ${isFullscreen ? 'bg-black p-0' : 'bg-green-50'}`}>
-      {/* 顶部控制栏 */}
+    <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 ${isFullscreen ? 'p-0' : 'px-4 py-8'}`}>
+      {/* 顶部控制栏（非全屏） */}
       {!isFullscreen && (
-        <div className="bg-white border border-green-100 rounded-lg p-4 mb-4">
-          <div className="flex justify-between items-center mb-3">
-            <div className="flex items-center gap-3">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-6 shadow-xl">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate({ to: '/playlist' })}
-                className="text-gray-400 hover:text-green-600 transition-colors text-sm"
+                className="text-slate-400 hover:text-violet-400 transition text-sm"
               >
                 ← 返回
               </button>
-              <h1 className="font-medium text-gray-800">播放器</h1>
+              <h1 className="text-white font-semibold text-lg">播放器</h1>
             </div>
-            
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-gray-500">
-                {currentIndex + 1} / {playlist.length}
-              </span>
+            <div className="flex items-center gap-3 text-xs">
+              <span className="text-slate-400">{currentIndex + 1} / {playlist.length}</span>
               <button
                 onClick={() => setShowPlaylist(!showPlaylist)}
-                className="bg-gray-100 px-2 py-1 rounded text-xs hover:bg-gray-200 transition-colors"
+                className="bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 px-3 py-1 rounded-lg transition"
               >
                 列表
               </button>
               <button
                 onClick={toggleFullscreen}
-                className="bg-gray-100 px-2 py-1 rounded text-xs hover:bg-gray-200 transition-colors"
+                className="bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 px-3 py-1 rounded-lg transition"
               >
                 全屏
               </button>
             </div>
           </div>
-
           {/* 进度条 */}
           <div>
-            <div className="flex justify-between text-xs text-gray-400 mb-1">
+            <div className="flex justify-between text-xs text-slate-500 mb-1">
               <span>进度</span>
               <span>{Math.round(getProgress())}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-1">
+            <div className="w-full bg-slate-700 rounded-full h-1.5">
               <div
-                className="bg-green-500 h-1 rounded-full transition-all duration-300"
+                className="bg-violet-500 h-1.5 rounded-full transition-all duration-300"
                 style={{ width: `${getProgress()}%` }}
               />
             </div>
-            <div className="flex justify-between text-xs text-gray-400 mt-1">
+            <div className="flex justify-between text-xs text-slate-500 mt-1">
               <span>{formatTime(getPlayedDuration())}</span>
               <span>{formatTime(getTotalDuration())}</span>
             </div>
@@ -188,9 +184,8 @@ export default function PlayerPage() {
         </div>
       )}
 
-      {/* 主播放区域 */}
-      <div className={`relative ${isFullscreen ? 'h-screen' : 'bg-white border border-green-100 rounded-lg overflow-hidden'}`}>
-        {/* 视频播放器 */}
+      {/* 播放区域 */}
+      <div className={`relative ${isFullscreen ? 'h-screen' : 'bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl'}`}>
         <div className={`relative ${isFullscreen ? 'h-full' : 'aspect-video'}`}>
           <VideoPlayer
             key={`${currentVideo.url}-${currentIndex}`}
@@ -200,36 +195,34 @@ export default function PlayerPage() {
             onEnded={next}
           />
 
-          {/* 全屏时的覆盖控制层 */}
           {isFullscreen && (
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
               <div className="flex justify-between items-center text-white">
                 <div>
-                  <h2 className="text-lg font-medium">
+                  <h2 className="text-lg font-semibold">
                     {getVideoInfo(currentVideo.url).icon} {getVideoInfo(currentVideo.url).platform}
                   </h2>
-                  <p className="text-sm text-gray-300">
-                    {formatTime(currentVideo.start)}-{formatTime(currentVideo.end)} 
-                    · {currentIndex + 1}/{playlist.length}
+                  <p className="text-sm text-slate-400">
+                    {formatTime(currentVideo.start)} - {formatTime(currentVideo.end)} · {currentIndex + 1}/{playlist.length}
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={handlePrevious}
                     disabled={currentIndex === 0}
-                    className="bg-black/50 px-3 py-2 rounded disabled:opacity-50 hover:bg-black/70 transition-colors text-sm"
+                    className="bg-black/40 hover:bg-black/70 px-4 py-2 rounded-lg text-sm disabled:opacity-50"
                   >
                     ⏮
                   </button>
                   <button
                     onClick={next}
-                    className="bg-black/50 px-3 py-2 rounded hover:bg-black/70 transition-colors text-sm"
+                    className="bg-black/40 hover:bg-black/70 px-4 py-2 rounded-lg text-sm"
                   >
                     ⏭
                   </button>
                   <button
                     onClick={toggleFullscreen}
-                    className="bg-black/50 px-3 py-2 rounded hover:bg-black/70 transition-colors text-sm"
+                    className="bg-black/40 hover:bg-black/70 px-4 py-2 rounded-lg text-sm"
                   >
                     退出
                   </button>
@@ -239,44 +232,43 @@ export default function PlayerPage() {
           )}
         </div>
 
-        {/* 非全屏时的底部控制栏 */}
         {!isFullscreen && (
-          <div className="bg-gray-50 p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex-1 min-w-0">
-                <h2 className="font-medium text-gray-800 truncate">
+          <div className="p-6 bg-slate-800/30 border-t border-white/10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="min-w-0">
+                <h2 className="text-white font-medium truncate">
                   {getVideoInfo(currentVideo.url).icon} 第 {currentIndex + 1} 个视频
                 </h2>
-                <p className="text-xs text-gray-500">
-                  {formatTime(currentVideo.start)}-{formatTime(currentVideo.end)} 
-                  ({formatTime(currentVideo.end - currentVideo.start)})
+                <p className="text-xs text-slate-400">
+                  {formatTime(currentVideo.start)} - {formatTime(currentVideo.end)} （{formatTime(currentVideo.end - currentVideo.start)}）
                 </p>
               </div>
-              
-              <div className="ml-4">
-                <span className={`text-xs px-2 py-1 rounded ${
-                  playbackState === 'playing' ? 'bg-green-500 text-white' : 
-                  playbackState === 'paused' ? 'bg-yellow-500 text-white' : 'bg-gray-400 text-white'
+              <span className={`text-xs px-2 py-1 rounded-full ${playbackState === 'playing' ? 'bg-green-500/80 text-white' :
+                playbackState === 'paused' ? 'bg-yellow-500/80 text-white' : 'bg-slate-500/60 text-white'
                 }`}>
-                  {playbackState === 'playing' ? '播放中' : 
-                   playbackState === 'paused' ? '暂停' : '加载中'}
-                </span>
-              </div>
+                {playbackState === 'playing' ? '播放中' :
+                  playbackState === 'paused' ? '暂停' : '加载中'}
+              </span>
             </div>
-
-            <div className="flex justify-center gap-3">
+            <div className="flex justify-center gap-4">
               <button
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
-                className="bg-gray-200 px-3 py-2 rounded text-sm disabled:opacity-50 hover:bg-gray-300 transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 rounded-xl text-white text-sm flex items-center gap-2"
               >
-                ⏮ 上一个
+                <svg viewBox="0 0 24 24" className="w-4 h-4">
+                  <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" />
+                </svg>
+                上一个
               </button>
               <button
                 onClick={next}
-                className="bg-lime-500 text-white px-3 py-2 rounded text-sm hover:bg-lime-600 transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 rounded-xl text-white text-sm flex items-center gap-2"
               >
-                ⏭ 下一个
+                下一个
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
               </button>
             </div>
           </div>
@@ -285,67 +277,59 @@ export default function PlayerPage() {
 
       {/* 播放列表侧边栏 */}
       {showPlaylist && !isFullscreen && (
-        <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-lg z-50 border-l border-green-100">
-          <div className="p-4 bg-green-50 border-b border-green-100">
-            <div className="flex justify-between items-center">
-              <h3 className="font-medium text-gray-800">播放列表</h3>
-              <button
-                onClick={() => setShowPlaylist(false)}
-                className="text-gray-400 hover:text-gray-600 text-sm"
-              >
-                ×
-              </button>
+        <>
+          <div className="fixed right-0 top-0 h-full w-80 bg-slate-900 border-l border-white/10 z-50 shadow-xl">
+            <div className="p-6 border-b border-white/10">
+              <div className="flex justify-between items-center">
+                <h3 className="text-white font-semibold text-lg">播放列表</h3>
+                <button
+                  onClick={() => setShowPlaylist(false)}
+                  className="text-slate-400 hover:text-white text-xl"
+                >
+                  ×
+                </button>
+              </div>
+              <p className="text-sm text-slate-500 mt-1">
+                {playlist.length} 个视频 · {formatTime(getTotalDuration())}
+              </p>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
-              {playlist.length} 个视频 · {formatTime(getTotalDuration())}
-            </p>
-          </div>
-          
-          <div className="overflow-y-auto h-full pb-20">
-            {playlist.map((video, index) => (
-              <div
-                key={index}
-                onClick={() => jumpToVideo(index)}
-                className={`p-3 border-b border-gray-100 cursor-pointer hover:bg-green-50 transition-colors ${
-                  index === currentIndex ? 'bg-lime-50 border-l-2 border-l-lime-500' : ''
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400 w-5">
-                    {index + 1}
-                  </span>
-                  {index === currentIndex && (
-                    <span className="text-lime-500 text-xs">▶</span>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-800 truncate">
-                      {getVideoInfo(video.url).icon} 视频 {index + 1}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {formatTime(video.start)}-{formatTime(video.end)}
-                    </p>
+            <div className="overflow-y-auto h-full pb-20">
+              {playlist.map((video, index) => (
+                <div
+                  key={index}
+                  onClick={() => jumpToVideo(index)}
+                  className={`px-6 py-4 cursor-pointer transition ${index === currentIndex
+                    ? 'bg-violet-500/10 border-l-4 border-violet-500'
+                    : 'hover:bg-white/5'
+                    }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-500 w-5">{index + 1}</span>
+                    {index === currentIndex && <span className="text-violet-400 text-xs">▶</span>}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-white truncate">
+                        {getVideoInfo(video.url).icon} 视频 {index + 1}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {formatTime(video.start)} - {formatTime(video.end)}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* 遮罩层 */}
-      {showPlaylist && !isFullscreen && (
-        <div
-          className="fixed inset-0 bg-black/20 z-40"
-          onClick={() => setShowPlaylist(false)}
-        />
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setShowPlaylist(false)}
+          />
+        </>
       )}
 
       {/* 快捷键提示 */}
       {!isFullscreen && (
-        <div className="mt-4 bg-green-100 rounded-lg p-3 text-center">
-          <p className="text-green-700 text-xs">
-            ← → 切换视频 · F 全屏 · 空格 播放/暂停 · ESC 关闭面板
-          </p>
+        <div className="mt-6 text-center text-xs text-slate-400">
+          ← → 切换视频 · F 全屏 · 空格 播放/暂停 · ESC 关闭面板
         </div>
       )}
     </div>
