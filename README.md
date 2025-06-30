@@ -1,64 +1,49 @@
-# workout-play
+# Workout Video Trainer
 
-> 一个基于 React + Zustand + TanStack Router + React Player 的极简视频片段连续播放工具，支持自定义视频链接及起止时间裁剪，适合打造健身、训练等定制播放清单。
+A web app to automate your workout video playlists, so you can focus on moving without distractions.
 
----
+## 💡 Motivation
 
-## 项目介绍
+I often found it frustrating to manually switch between workout videos and track rest/stretch times. This tool solves that by automating the entire video flow.
 
-`workout-play` 旨在提供一个轻量、极简的前端工具，帮助用户将来自多个平台（YouTube、B站等）的视频片段自由组合成连续播放清单，支持设置每段视频的起止播放时间，实现自动无缝播放。
+## 🚀 Features
 
-核心目标：
+- Paste multiple video URLs and create a workout playlist
+- Set custom play durations and rest/stretch intervals
+- Automatic video switching
+- Countdown animations and sound reminders
+- Workout summary at the end (total sets, duration)
+- Local storage support for saving playlists
+- Fully responsive design (mobile & desktop)
 
-- 支持多平台视频链接
-- 视频片段自由添加、删除、排序
-- 起止时间精确控制视频播放区间
-- 自动连续播放无缝衔接
-- 极简无干扰播放体验
+## ⚙️ Tech Stack
 
----
+- React
+- Zustand for state management
+- react-player for video playback
+- Tailwind CSS for styling
+- Framer Motion for animations
 
-## 技术栈
+## 🌟 Challenges
 
-- **语言与构建**：TypeScript + Vite + SWC  
-- **UI**：React 19 + TailwindCSS  
-- **路由**：TanStack Router v1  
-- **状态管理**：Zustand  
-- **视频播放**：react-player  
-- **代码质量**：ESLint
+- Controlling video transitions seamlessly
+- Designing an intuitive playlist editor
+- Balancing UX detail (e.g., rest timer feedback, preventing distractions)
 
-## 快速开始
-
-### 安装依赖
-
-npm install
-
-## 运行开发环境
-npm run dev
-
-## 构建生产环境
-npm run build
-
-## 预览生产环境
-npm run preview
-
-## 使用说明
-1. 进入播放清单页面（/playlist），输入视频链接及起止时间，点击“添加到清单”
-2. 在下方清单中查看已添加的视频片段，可删除或清空
-3. 点击“开始播放”，进入播放器页面，自动连续播放清单中所有片段
-4. 播放过程中，播放器会自动跳转到下一段视频并循环播放
-
-## 未来计划
-- 视频片段拖拽排序
-- 播放状态本地持久化
-- 语音播报动作提示
-- 添加更多功能，如播放速度、音量控制、跳转至指定时间点播放等
-- 添加更多样式，如自定义播放器样式、自定义播放列表样式等
-
-## 贡献指南
-欢迎提出 issues 和 PR，建议先在 issue 讨论需求和方案。
-
-## 许可协议
-MIT License © 2025
+## 💻 Demo
 
 
+
+## 📷 Screenshots
+
+_Add screenshots or GIFs here to showcase UX._
+
+## 🗺 Roadmap
+
+- Add user authentication and cloud playlist syncing
+- Support for custom sound effects
+- Workout plan templates
+
+## ⚖ License
+
+MIT
