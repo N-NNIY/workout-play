@@ -1,0 +1,47 @@
+{
+  "playlist": "播放清单",
+  "addVideo": "添加视频",
+  "videoUrlPlaceholder": "粘贴视频链接...",
+  "videoUrl": "视频链接",
+  "addToList": "添加到清单",
+  "clearAll": "清空全部",
+  "startPlaying": "开始播放",
+  "emptyStateTitle": "开始创建你的清单",
+  "emptyStateDesc": "添加你喜欢的视频片段，打造专属的学习或娱乐播放列表。",
+  
+  "pageTitle": "播放清单",
+  "emptyStateSubDesc": "请先添加视频片段",
+  "myList": "我的清单",
+  "videoCount": "个视频",
+  "moveUp": "上移",
+  "moveDown": "下移",
+  "editTitle": "编辑标题",
+  "save": "保存",
+  "cancel": "取消",
+  "platformSupportDesc": "支持 YouTube、B站、Vimeo 等主流平台",
+  "startPlaylistBtn": "开始播放清单",
+  
+  "bottomNoteMultiPlatform": "多平台支持",
+  "bottomNoteSmartSort": "智能排序",
+  "bottomNoteContinuousPlay": "连续播放",
+
+  "backToPlaylist": "返回",
+  "videoPlayer": "视频播放器",
+  "playing": "播放中",
+  "paused": "暂停",
+  "loading": "加载中",
+  "playProgress": "播放进度",
+  "previous": "上一个",
+  "next": "下一个",
+  "videosCount": "个视频",
+  "fullscreen": "全屏",
+  "exitFullscreen": "退出",
+  "list": "列表",
+  "jumpToVideo": "跳转到视频 {{index}}",
+  "shortcuts": {
+    "leftRight": "← → 切换视频",
+    "fullscreen": "F 全屏",
+    "playPause": "Space 播放/暂停",
+    "closePanel": "Esc 关闭面板"
+  }
+}

@@ -2,13 +2,11 @@ import { useState, useEffect } from 'react'
 import { usePlaylistStore } from '../store/usePlaylistStore'
 import { VideoPlayer } from '../components/VideoPlayer'
 import { useNavigate } from '@tanstack/react-router'
-import { 
-  ArrowLeft, 
-  Play, 
-  Pause, 
-  SkipBack, 
-  SkipForward, 
-  Maximize, 
+import {
+  ArrowLeft,
+  Play,
+  SkipBack,
+  SkipForward,
   List,
   X,
   Youtube,
@@ -16,13 +14,28 @@ import {
   Clock,
   Monitor
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export default function PlayerPage() {
-  const { playlist, currentIndex, next, previous, setCurrentIndex } = usePlaylistStore()
+  // 修改这里：使用新的存储格式
+  const {
+    getCurrentVideos,
+    currentIndex,
+    next,
+    previous,
+    setCurrentIndex,
+    getCurrentPlaylist
+  } = usePlaylistStore()
+
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showPlaylist, setShowPlaylist] = useState(false)
   const [playbackState] = useState<'playing' | 'paused' | 'loading'>('loading')
   const navigate = useNavigate()
+  const { t } = useTranslation()
+
+  // 获取当前播放列表和视频
+  const currentPlaylist = getCurrentPlaylist()
+  const playlist = getCurrentVideos()
 
   // 获取视频平台信息
   const getVideoInfo = (url: string) => {
@@ -36,12 +49,12 @@ export default function PlayerPage() {
     return { platform: '视频文件', icon: <Video className="w-4 h-4" /> }
   }
 
-  // 如果播放列表为空，重定向到播放列表页面
+  // 如果没有当前播放列表或播放列表为空，重定向到播放列表页面
   useEffect(() => {
-    if (playlist.length === 0) {
+    if (!currentPlaylist || playlist.length === 0) {
       navigate({ to: '/playlist' })
     }
-  }, [playlist.length, navigate])
+  }, [currentPlaylist, playlist.length, navigate])
 
   // 监听全屏变化
   useEffect(() => {
@@ -53,51 +66,23 @@ export default function PlayerPage() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
   }, [])
 
-  // 键盘快捷键
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement) return
-
-      switch (e.key) {
-        case ' ':
-          e.preventDefault()
-          // 这里可以控制播放/暂停，需要通过 VideoPlayer 组件暴露方法
-          break
-        case 'ArrowLeft':
-          e.preventDefault()
-          previous()
-          break
-        case 'ArrowRight':
-          e.preventDefault()
-          next()
-          break
-        case 'f':
-        case 'F':
-          e.preventDefault()
-          toggleFullscreen()
-          break
-        case 'Escape':
-          if (showPlaylist) setShowPlaylist(false)
-          break
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [next, previous, showPlaylist])
-
-  if (playlist.length === 0) {
+  // 如果没有播放列表或播放列表为空，显示空状态
+  if (!currentPlaylist || playlist.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Video className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-          <h2 className="text-xl font-medium text-gray-800 mb-2">播放列表为空</h2>
-          <p className="text-gray-500 text-sm mb-4">请先添加视频片段</p>
+          <h2 className="text-xl font-medium text-gray-800 mb-2">
+            {!currentPlaylist ? '未选择播放列表' : '播放列表为空'}
+          </h2>
+          <p className="text-gray-500 text-sm mb-4">
+            {!currentPlaylist ? '请先选择一个播放列表' : '请先添加视频片段'}
+          </p>
           <button
             onClick={() => navigate({ to: '/playlist' })}
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors text-sm"
           >
-            创建播放列表
+            {!currentPlaylist ? '选择播放列表' : '编辑播放列表'}
           </button>
         </div>
       </div>
@@ -105,13 +90,6 @@ export default function PlayerPage() {
   }
 
   const currentVideo = playlist[currentIndex]
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
-
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) {
@@ -133,16 +111,6 @@ export default function PlayerPage() {
     setShowPlaylist(false)
   }
 
-  const getTotalDuration = () => {
-    return playlist.reduce((total, seg) => total + (seg.end - seg.start), 0)
-  }
-
-  const getPlayedDuration = () => {
-    return playlist
-      .slice(0, currentIndex)
-      .reduce((total, seg) => total + (seg.end - seg.start), 0)
-  }
-
   const handlePrevious = () => {
     previous()
   }
@@ -155,16 +123,12 @@ export default function PlayerPage() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => navigate({ to: '/playlist' })}
+                onClick={() => navigate({ to: '/' })}
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition"
               >
                 <ArrowLeft className="w-4 h-4" />
-                返回播放列表
+                {t('backToPlaylist')}
               </button>
-              <div className="flex items-center gap-2 text-xl font-semibold text-gray-800">
-                <Play className="w-6 h-6" />
-                视频播放器
-              </div>
             </div>
           </div>
         )}
@@ -180,23 +144,19 @@ export default function PlayerPage() {
                     <Monitor className="w-4 h-4" />
                     第 {currentIndex + 1} / {playlist.length} 个
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Clock className="w-4 h-4" />
-                    总时长 {formatTime(getTotalDuration())}
-                  </div>
-                  <div className={`px-2 py-1 rounded text-xs font-medium ${
-                    playbackState === 'playing' ? 'bg-green-100 text-green-700' :
-                    playbackState === 'paused' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'
-                  }`}>
+
+                  <div className={`px-2 py-1 rounded text-xs font-medium ${playbackState === 'playing' ? 'bg-green-100 text-green-700' :
+                      playbackState === 'paused' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'
+                    }`}>
                     {playbackState === 'playing' ? '播放中' :
                       playbackState === 'paused' ? '暂停' : '加载中'}
                   </div>
                 </div>
-                
+
                 {/* 进度条 */}
                 <div>
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>播放进度</span>
+                    <span>{t('playProgress')}</span>
                     <span>{Math.round(getProgress())}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -204,10 +164,6 @@ export default function PlayerPage() {
                       className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${getProgress()}%` }}
                     />
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>{formatTime(getPlayedDuration())}</span>
-                    <span>{formatTime(getTotalDuration())}</span>
                   </div>
                 </div>
               </div>
@@ -220,7 +176,6 @@ export default function PlayerPage() {
                   key={`${currentVideo.url}-${currentIndex}`}
                   url={currentVideo.url}
                   start={currentVideo.start}
-                  end={currentVideo.end}
                   onEnded={next}
                 />
 
@@ -229,12 +184,10 @@ export default function PlayerPage() {
                     <div className="flex justify-between items-center text-white">
                       <div>
                         <h2 className="text-lg font-semibold flex items-center gap-2">
-                          {getVideoInfo(currentVideo.url).icon} 
+                          {getVideoInfo(currentVideo.url).icon}
                           {getVideoInfo(currentVideo.url).platform}
                         </h2>
-                        <p className="text-sm text-gray-300">
-                          {formatTime(currentVideo.start)} - {formatTime(currentVideo.end)} · {currentIndex + 1}/{playlist.length}
-                        </p>
+                        <p className="text-sm opacity-80">{currentPlaylist.name}</p>
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -254,7 +207,7 @@ export default function PlayerPage() {
                           onClick={toggleFullscreen}
                           className="bg-black/40 hover:bg-black/70 px-4 py-2 rounded-lg text-sm"
                         >
-                          退出
+                          {t('exitFullscreen')}
                         </button>
                       </div>
                     </div>
@@ -262,67 +215,6 @@ export default function PlayerPage() {
                 )}
               </div>
             </div>
-
-            {/* 底部控制区域 */}
-            {!isFullscreen && (
-              <div className="bg-white rounded-lg shadow-sm border mt-4 p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-lg font-medium text-gray-800 truncate flex items-center gap-2">
-                      {getVideoInfo(currentVideo.url).icon} 
-                      {currentVideo.title || `第 ${currentIndex + 1} 个视频`}
-                    </h2>
-                    <p className="text-sm text-gray-500 flex items-center gap-2">
-                      <span>{getVideoInfo(currentVideo.url).platform}</span>
-                      <span>•</span>
-                      <span>{formatTime(currentVideo.start)} - {formatTime(currentVideo.end)}</span>
-                      <span>•</span>
-                      <span>({formatTime(currentVideo.end - currentVideo.start)})</span>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setShowPlaylist(!showPlaylist)}
-                      className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition"
-                    >
-                      <List className="w-4 h-4" />
-                      列表
-                    </button>
-                    <button
-                      onClick={toggleFullscreen}
-                      className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition"
-                    >
-                      <Maximize className="w-4 h-4" />
-                      全屏
-                    </button>
-                  </div>
-                </div>
-                
-                {/* 播放控制按钮 */}
-                <div className="flex justify-center gap-4">
-                  <button
-                    onClick={handlePrevious}
-                    disabled={currentIndex === 0}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 disabled:bg-gray-400 text-white rounded-lg transition"
-                  >
-                    <SkipBack className="w-4 h-4" />
-                    上一个
-                  </button>
-                  <button
-                    className="flex items-center gap-2 px-6 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition"
-                  >
-                    <Pause className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={next}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg transition"
-                  >
-                    下一个
-                    <SkipForward className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* 右侧播放列表 */}
@@ -332,13 +224,12 @@ export default function PlayerPage() {
                 <div className="p-4 border-b">
                   <h3 className="font-semibold text-gray-800 flex items-center gap-2">
                     <List className="w-5 h-5" />
-                    播放队列
+                    {currentPlaylist.name}
                   </h3>
                   <p className="text-sm text-gray-500 flex items-center gap-2 mt-1">
                     <Monitor className="w-4 h-4" />
-                    {playlist.length} 个视频
+                    {playlist.length} {t('videosCount')}
                     <Clock className="w-4 h-4" />
-                    {formatTime(getTotalDuration())}
                   </p>
                 </div>
                 <div className="max-h-96 overflow-y-auto">
@@ -346,9 +237,8 @@ export default function PlayerPage() {
                     <div
                       key={index}
                       onClick={() => jumpToVideo(index)}
-                      className={`p-3 cursor-pointer transition hover:bg-gray-50 ${
-                        index === currentIndex ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-                      }`}
+                      className={`p-3 cursor-pointer transition hover:bg-gray-50 ${index === currentIndex ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-sm text-gray-400 w-6">{index + 1}</span>
@@ -359,9 +249,6 @@ export default function PlayerPage() {
                           <p className="text-sm font-medium text-gray-800 truncate flex items-center gap-2">
                             {getVideoInfo(video.url).icon}
                             {video.title || `视频 ${index + 1}`}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {getVideoInfo(video.url).platform} • {formatTime(video.start)} - {formatTime(video.end)}
                           </p>
                         </div>
                       </div>
@@ -381,7 +268,7 @@ export default function PlayerPage() {
                 <div className="flex justify-between items-center">
                   <h3 className="font-semibold text-gray-800 flex items-center gap-2">
                     <List className="w-5 h-5" />
-                    播放列表
+                    {currentPlaylist.name}
                   </h3>
                   <button
                     onClick={() => setShowPlaylist(false)}
@@ -390,18 +277,14 @@ export default function PlayerPage() {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <p className="text-sm text-gray-500 mt-1">
-                  {playlist.length} 个视频 · {formatTime(getTotalDuration())}
-                </p>
               </div>
               <div className="overflow-y-auto h-full pb-20">
                 {playlist.map((video, index) => (
                   <div
                     key={index}
                     onClick={() => jumpToVideo(index)}
-                    className={`p-4 cursor-pointer transition hover:bg-gray-50 ${
-                      index === currentIndex ? 'bg-blue-50 border-l-4 border-blue-500' : ''
-                    }`}
+                    className={`p-4 cursor-pointer transition hover:bg-gray-50 ${index === currentIndex ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-gray-400 w-6">{index + 1}</span>
@@ -411,10 +294,10 @@ export default function PlayerPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-800 truncate flex items-center gap-2">
                           {getVideoInfo(video.url).icon}
-                          视频 {index + 1}
+                          {video.title || `视频 ${index + 1}`}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {formatTime(video.start)} - {formatTime(video.end)}
+                          开始: {video.start}s
                         </p>
                       </div>
                     </div>
@@ -427,18 +310,6 @@ export default function PlayerPage() {
               onClick={() => setShowPlaylist(false)}
             />
           </>
-        )}
-
-        {/* 快捷键提示 */}
-        {!isFullscreen && (
-          <div className="mt-6 text-center text-sm text-gray-500">
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <span>← → 切换视频</span>
-              <span>F 全屏</span>
-              <span>Space 播放/暂停</span>
-              <span>Esc 关闭面板</span>
-            </div>
-          </div>
         )}
       </div>
     </div>

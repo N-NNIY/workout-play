@@ -1,14 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState ,useCallback} from 'react';
 import ReactPlayer from 'react-player';
 
 interface VideoPlayerProps {
   url: string;
   start: number;
-  end: number;
   onEnded: () => void;
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, start, end, onEnded }) => {
+export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, start, onEnded }) => {
   const playerRef = useRef<ReactPlayer>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [playing, setPlaying] = useState(false);
@@ -47,20 +46,19 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, start, end, onEnd
     onEnded();
   };
 
-  // 监听B站iframe消息
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== 'https://player.bilibili.com') return;
-      
-      // 处理B站播放器状态变化
-      if (event.data.event === 'ended') {
-        handleEnded();
-      }
-    };
+const handleMessage = useCallback((event: MessageEvent) => {
+    if (event.origin !== 'https://player.bilibili.com') return;
 
+    if (event.data.event === 'ended') {
+      onEnded();
+    }
+  }, [onEnded]);
+
+  useEffect(() => {
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [onEnded]);
+  }, [handleMessage]);
+
 
   // B站播放器组件
   if (isBilibili) {
@@ -123,7 +121,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ url, start, end, onEnd
             playerVars: { 
               origin: window.location.origin,
               start: Math.floor(start),
-              end: Math.floor(end),
               autoplay: playing ? 1 : 0,
               rel: 0, // 不显示相关视频
               modestbranding: 1 // 隐藏YouTube logo

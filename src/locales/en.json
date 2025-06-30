@@ -1,0 +1,47 @@
+{
+  "playlist": "Playlist",
+  "addVideo": "Add Video",
+  "videoUrlPlaceholder": "Paste video URL...",
+  "videoUrl": "Video URL",
+  "addToList": "Add to List",
+  "clearAll": "Clear All",
+  "startPlaying": "Start Playing",
+  "emptyStateTitle": "Start Creating Your Playlist",
+  "emptyStateDesc": "Add your favorite video clips to build a personalized study or entertainment playlist.",
+
+  "pageTitle": "Playlist",
+  "emptyStateSubDesc": "Please add some video clips first",
+  "myList": "My List",
+  "videoCount": "videos",
+  "moveUp": "Move Up",
+  "moveDown": "Move Down",
+  "editTitle": "Edit Title",
+  "save": "Save",
+  "cancel": "Cancel",
+  "platformSupportDesc": "Supports popular platforms like YouTube, Bilibili, Vimeo, etc.",
+  "startPlaylistBtn": "Start Playlist",
+
+  "bottomNoteMultiPlatform": "Multi-platform Support",
+  "bottomNoteSmartSort": "Smart Sorting",
+  "bottomNoteContinuousPlay": "Continuous Play",
+
+  "backToPlaylist": "Back",
+  "videoPlayer": "Video Player",
+  "playing": "Playing",
+  "paused": "Paused",
+  "loading": "Loading",
+  "playProgress": "Play progress",
+  "previous": "Previous",
+  "next": "Next",
+  "videosCount": "videos",
+  "fullscreen": "Fullscreen",
+  "exitFullscreen": "Exit",
+  "list": "List",
+  "jumpToVideo": "Jump to video {{index}}",
+  "shortcuts": {
+    "leftRight": "← → Switch video",
+    "fullscreen": "F Fullscreen",
+    "playPause": "Space Play/Pause",
+    "closePanel": "Esc Close panel"
+  }
+}
