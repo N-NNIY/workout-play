@@ -235,7 +235,7 @@ export default function PlaylistPage() {
                         <div className="flex items-center justify-between">
                           <span>{playlist.name}</span>
                           <span className="text-sm text-gray-500">
-                            {playlist.videos?.length || 0} 个视频
+                            {playlist.videos?.length || 0} {t('videos')}
                           </span>
                         </div>
                       </button>
@@ -246,7 +246,7 @@ export default function PlaylistPage() {
                         className="w-full text-left px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2"
                       >
                         <Plus className="w-4 h-4" />
-                        快速创建新列表
+                        {t('quickCreatePlaylist')}
                       </button>
                     </div>
                   </div>
@@ -272,14 +272,14 @@ export default function PlaylistPage() {
               className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
             >
               <Settings className="w-4 h-4" />
-              管理列表
+              {t('playlistManager')}
             </button>
             <button
               onClick={() => navigate({ to: '/stretchCountdown' })}
               className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors"
             >
               <Settings className="w-4 h-4" />
-              倒计时
+              {t('stretchCountdown')}
             </button>
           </div>
         </div>
@@ -295,7 +295,7 @@ export default function PlaylistPage() {
                 <div>
                   <h2 className="font-semibold text-gray-900">{currentPlaylist.name}</h2>
                   <p className="text-sm text-gray-500">
-                    {playlist.length} 个视频 • 创建于 {new Date(currentPlaylist.createdAt).toLocaleDateString()}
+                    {playlist.length} {t('videos')} • 创建于 {new Date(currentPlaylist.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
@@ -306,7 +306,7 @@ export default function PlaylistPage() {
                     className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-grey-700 transition-colors"
                   >
                     <div className="w-0 h-0 border-l-3 border-l-white border-y-2 border-y-transparent"></div>
-                    播放全部
+                    {t('startPlaying')}
                   </button>
                 )}
                 <button
@@ -314,7 +314,7 @@ export default function PlaylistPage() {
                   disabled={playlist.length === 0}
                   className="px-3 py-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  清空
+                  {t('clearAll')}
                 </button>
               </div>
             </div>

@@ -1,14 +1,15 @@
 import { useState } from 'react'
 import { usePlaylistStore } from '../store/usePlaylistStore'
 import { useNavigate } from '@tanstack/react-router'
-import { Edit, Trash2, Play, ArrowLeft, Plus, Calendar, Video, Clock } from 'lucide-react'
-
+import { Edit, Trash2, Play, ArrowLeft, Plus, Calendar, Video, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 export default function PlaylistManagerPage() {
-  const [isCreating, setIsCreating] = useState(false)
+  const [isCreatingModal, setIsCreatingModal] = useState(false)
   const [newPlaylistName, setNewPlaylistName] = useState('')
+  const [newPlaylistDescription, setNewPlaylistDescription] = useState('')
   const [editingPlaylistId, setEditingPlaylistId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
-
+  const { t } = useTranslation()
   const {
     playlists,
     currentPlaylistId,
@@ -24,11 +25,18 @@ export default function PlaylistManagerPage() {
     if (newPlaylistName.trim()) {
       const newId = createPlaylist(newPlaylistName.trim())
       setNewPlaylistName('')
-      setIsCreating(false)
+      setNewPlaylistDescription('')
+      setIsCreatingModal(false)
       // 创建后自动切换到新播放列表并跳转到编辑页面
       switchPlaylist(newId)
       navigate({ to: '/' })
     }
+  }
+
+  const handleCloseModal = () => {
+    setIsCreatingModal(false)
+    setNewPlaylistName('')
+    setNewPlaylistDescription('')
   }
 
   const handleDeletePlaylist = (playlistId: string) => {
@@ -70,10 +78,8 @@ export default function PlaylistManagerPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getPlaylistStats = (playlist: any) => {
     const videoCount = playlist.videos?.length || 0
-    // 这里可以添加更多统计信息，比如总时长等
     return {
       videoCount,
-      // totalDuration: calculateTotalDuration(playlist.videos), // 如果有时长信息
     }
   }
 
@@ -107,105 +113,20 @@ export default function PlaylistManagerPage() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">播放列表管理</h1>
-              <p className="text-gray-500 mt-1">管理你的所有播放列表</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('playlistManageTitle')}</h1>
+              <p className="text-gray-500 mt-1">{t('playlistManageDesc')}</p>
             </div>
           </div>
 
           {/* 快速创建按钮 */}
           <button
-            onClick={() => setIsCreating(true)}
+            onClick={() => setIsCreatingModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
           >
             <Plus className="w-4 h-4" />
-            新建列表
+            {t('playlistManageCreate')}
           </button>
         </div>
-
-        {/* 创建新播放列表卡片 */}
-        {isCreating && (
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">创建新播放列表</h3>
-            <div className="flex items-center gap-3">
-              <input
-                type="text"
-                value={newPlaylistName}
-                onChange={(e) => setNewPlaylistName(e.target.value)}
-                placeholder="输入播放列表名称..."
-                className="flex-1 border border-gray-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleCreatePlaylist()
-                  } else if (e.key === 'Escape') {
-                    setIsCreating(false)
-                    setNewPlaylistName('')
-                  }
-                }}
-                autoFocus
-              />
-              <button
-                onClick={handleCreatePlaylist}
-                className="px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
-              >
-                创建
-              </button>
-              <button
-                onClick={() => {
-                  setIsCreating(false)
-                  setNewPlaylistName('')
-                }}
-                className="px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-              >
-                取消
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* 播放列表概览统计 */}
-        {playlists.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Video className="w-6 h-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{playlists.length}</p>
-                  <p className="text-gray-500 text-sm">个播放列表</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Play className="w-6 h-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {playlists.reduce((total, playlist) => total + (playlist.videos?.length || 0), 0)}
-                  </p>
-                  <p className="text-gray-500 text-sm">个视频</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {playlists.find(p => p.id === currentPlaylistId)?.name?.slice(0, 6) || '无'}
-                  </p>
-                  <p className="text-gray-500 text-sm">当前列表</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* 播放列表网格 */}
         {playlists.length > 0 ? (
@@ -390,7 +311,7 @@ export default function PlaylistManagerPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">还没有播放列表</h2>
             <p className="text-gray-500 mb-6">创建你的第一个播放列表，开始收集喜欢的视频</p>
             <button
-              onClick={() => setIsCreating(true)}
+              onClick={() => setIsCreatingModal(true)}
               className="px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
             >
               创建第一个列表
@@ -398,6 +319,79 @@ export default function PlaylistManagerPage() {
           </div>
         )}
       </div>
+
+      {/* 创建播放列表模态弹窗 */}
+      {isCreatingModal && (
+        <div className="fixed inset-0 bg-white bg-opacity-10 backdrop-blur-lg flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">创建新播放列表</h2>
+              <button
+                onClick={handleCloseModal}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  播放列表名称 <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newPlaylistName}
+                  onChange={(e) => setNewPlaylistName(e.target.value)}
+                  placeholder="输入播放列表名称..."
+                  className="w-full border border-gray-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleCreatePlaylist()
+                    } else if (e.key === 'Escape') {
+                      handleCloseModal()
+                    }
+                  }}
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  描述 <span className="text-gray-400">(可选)</span>
+                </label>
+                <textarea
+                  value={newPlaylistDescription}
+                  onChange={(e) => setNewPlaylistDescription(e.target.value)}
+                  placeholder="为你的播放列表添加描述..."
+                  rows={3}
+                  className="w-full border border-gray-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 mt-8">
+              <button
+                onClick={handleCreatePlaylist}
+                disabled={!newPlaylistName.trim()}
+                className={`flex-1 py-3 rounded-xl font-medium transition-colors ${
+                  newPlaylistName.trim()
+                    ? 'bg-gray-900 text-white hover:bg-gray-800'
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                创建播放列表
+              </button>
+              <button
+                onClick={handleCloseModal}
+                className="flex-1 py-3 text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
