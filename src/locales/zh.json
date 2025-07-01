@@ -74,5 +74,29 @@
     "fullscreen": "F 全屏",
     "playPause": "Space 播放/暂停",
     "closePanel": "Esc 关闭面板"
-  }
+  },
+
+  "stretchTimer": "拉伸计时器",
+  "stretchTime": "拉伸时间",
+  "stretchSets": "拉伸组数",
+  "restTimeBetweenSets": "组间休息时间",
+  "sets": "组",
+  "currentSet": "第 {{current}} 组 / 共 {{total}} 组",
+  "completedAll": "全部拉伸完成！",
+  "resting": "休息中...",
+  "stretching": "正在拉伸...",
+  "readyToStart": "准备开始",
+  "nextSet": "下一组即将开始",
+  "rest": "休息",
+  "stretch": "拉伸",
+  "progress": "进度",
+  "restart": "重新开始",
+  "pause": "暂停",
+  "start": "开始",
+  "reset": "重置",
+  "stretchTipsTitle": "拉伸要点",
+  "tipBreath": "保持深呼吸，让身体自然放松",
+  "tipGentle": "动作缓慢温和，避免过度用力",
+  "tipFocus": "感受肌肉的伸展，保持专注",
+  "tipStop": "如有不适或疼痛请立即停止"
 }

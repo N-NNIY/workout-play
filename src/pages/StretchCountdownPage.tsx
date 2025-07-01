@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Settings, Volume2, VolumeX, Activity, Timer, Repeat } from 'lucide-react';
+import { t } from 'i18next';
 
 const StretchCountdownPage = () => {
   const [timeLeft, setTimeLeft] = useState<number>(60);
@@ -141,7 +142,7 @@ const StretchCountdownPage = () => {
             <div className="p-2 bg-stone-100 rounded-xl">
               <Activity className="w-6 h-6 text-stone-600" />
             </div>
-            拉伸计时器
+            {t('stretchTimer')}
           </h1>
           <div className="flex gap-2">
             <button
@@ -166,7 +167,7 @@ const StretchCountdownPage = () => {
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-stone-700 flex items-center gap-2">
                 <Timer className="w-4 h-4" />
-                拉伸时间
+                {t('stretchTime')}
               </h3>
               <div className="grid grid-cols-3 gap-2">
                 {presetTimes.map((preset) => (
@@ -189,7 +190,7 @@ const StretchCountdownPage = () => {
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-stone-700 flex items-center gap-2">
                 <Repeat className="w-4 h-4" />
-                拉伸组数
+                {t('stretchSets')}
               </h3>
               <div className="grid grid-cols-6 gap-2">
                 {presetSets.map((sets) => (
@@ -202,7 +203,7 @@ const StretchCountdownPage = () => {
                         : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 hover:border-stone-300'
                     }`}
                   >
-                    {sets}组
+                    {sets}{t('sets')}
                   </button>
                 ))}
               </div>
@@ -210,7 +211,7 @@ const StretchCountdownPage = () => {
 
             {/* 休息时间设置 */}
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-stone-700">组间休息时间</h3>
+              <h3 className="text-sm font-semibold text-stone-700">{t('restTimeBetweenSets')}</h3>
               <div className="grid grid-cols-3 gap-2">
                 {presetRestTimes.map((time) => (
                   <button
@@ -259,7 +260,7 @@ const StretchCountdownPage = () => {
           </div>
           {isResting && (
             <div className="text-sm text-stone-500">
-              下一组即将开始
+              {t('nextSet')}
             </div>
           )}
         </div>
@@ -275,7 +276,7 @@ const StretchCountdownPage = () => {
             ></div>
           </div>
           <p className="text-center text-sm text-stone-500">
-            {isResting ? '休息' : '拉伸'}进度: {Math.round(getProgress())}%
+            {isResting ? '休息' : '拉伸'}{t('progress')}: {Math.round(getProgress())}%
           </p>
         </div>
 
@@ -294,17 +295,17 @@ const StretchCountdownPage = () => {
             {isCompleted ? (
               <>
                 <RotateCcw className="w-6 h-6" />
-                重新开始
+                {t('restart')}
               </>
             ) : isRunning ? (
               <>
                 <Pause className="w-6 h-6" />
-                暂停
+                {t('pause')}
               </>
             ) : (
               <>
                 <Play className="w-6 h-6" />
-                开始
+                {t('start')}
               </>
             )}
           </button>
@@ -313,7 +314,7 @@ const StretchCountdownPage = () => {
             className="px-6 py-4 bg-stone-100 hover:bg-stone-200 rounded-2xl text-stone-700 font-semibold flex items-center gap-2 transition-all duration-200"
           >
             <RotateCcw className="w-5 h-5" />
-            重置
+            {t('reset')}
           </button>
         </div>
 
@@ -321,24 +322,24 @@ const StretchCountdownPage = () => {
         <div className="bg-stone-50/50 border border-stone-200 rounded-2xl p-6 space-y-3 text-sm text-stone-600">
           <h3 className="font-semibold flex items-center gap-2 text-stone-700 text-base">
             <Activity className="w-5 h-5 text-stone-500" />
-            拉伸要点
+            {t('stretchTipsTitle')}
           </h3>
           <div className="space-y-2">
             <p className="flex items-start gap-2">
               <span className="text-stone-400 mt-0.5">•</span>
-              <span>保持深呼吸，让身体自然放松</span>
+              <span>{t('tipBreath')}</span>
             </p>
             <p className="flex items-start gap-2">
               <span className="text-stone-400 mt-0.5">•</span>
-              <span>动作缓慢温和，避免过度用力</span>
+              <span>{t('tipGentle')}</span>
             </p>
             <p className="flex items-start gap-2">
               <span className="text-stone-400 mt-0.5">•</span>
-              <span>感受肌肉的伸展，保持专注</span>
+              <span>{t('tipFocus')}</span>
             </p>
             <p className="flex items-start gap-2">
               <span className="text-stone-400 mt-0.5">•</span>
-              <span>如有不适或疼痛请立即停止</span>
+              <span>{t('tipStop')}</span>
             </p>
           </div>
         </div>
