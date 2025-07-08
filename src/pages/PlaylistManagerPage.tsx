@@ -90,9 +90,9 @@ export default function PlaylistManagerPage() {
     const diffTime = Math.abs(now.getTime() - date.getTime())
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     
-    if (diffDays === 1) return '今天'
-    if (diffDays === 2) return '昨天'
-    if (diffDays <= 7) return `${diffDays} 天前`
+    if (diffDays === 1) return t('today')
+  if (diffDays === 2) return t('yesterday')
+  if (diffDays <= 7) return t('daysAgo', { count: diffDays })
     return date.toLocaleDateString('zh-CN', { 
       year: 'numeric', 
       month: 'short', 
@@ -124,7 +124,7 @@ export default function PlaylistManagerPage() {
             className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
           >
             <Plus className="w-4 h-4" />
-            {t('playlistManageCreate')}
+            {t('create')}
           </button>
         </div>
 
@@ -180,13 +180,13 @@ export default function PlaylistManagerPage() {
                             onClick={() => handleRenamePlaylist(playlist.id, editingName)}
                             className="px-3 py-1 bg-gray-900 text-white rounded-lg text-sm hover:bg-gray-800"
                           >
-                            保存
+                            {t('save')}
                           </button>
                           <button
                             onClick={cancelEditing}
                             className="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-lg text-sm"
                           >
-                            取消
+                           {t('cancel')}
                           </button>
                         </div>
                       )}
@@ -218,7 +218,7 @@ export default function PlaylistManagerPage() {
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
                         <Video className="w-4 h-4" />
-                        <span>{stats.videoCount} 个视频</span>
+                        <span>{stats.videoCount} {t('videos')}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
@@ -242,7 +242,7 @@ export default function PlaylistManagerPage() {
                         )}
                       </div>
                     ) : (
-                      <div className="text-sm text-gray-400 italic">暂无视频</div>
+                      <div className="text-sm text-gray-400 italic">{t('empty')}</div>
                     )}
                   </div>
 
@@ -256,13 +256,13 @@ export default function PlaylistManagerPage() {
                             className="flex-1 flex items-center justify-center gap-2 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
                           >
                             <Play className="w-4 h-4" />
-                            播放
+                            {t('play')}
                           </button>
                           <button
                             onClick={() => handleEditPlaylist(playlist.id)}
                             className="flex-1 py-2 text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
                           >
-                            编辑
+                           {t('edit')}
                           </button>
                         </>
                       ) : (
@@ -271,7 +271,7 @@ export default function PlaylistManagerPage() {
                             onClick={() => handleEditPlaylist(playlist.id)}
                             className="flex-1 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
                           >
-                            添加视频
+                            {t('addVideo')}
                           </button>
                           {!isActive && (
                             <button
@@ -308,13 +308,13 @@ export default function PlaylistManagerPage() {
                 </div>
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">还没有播放列表</h2>
-            <p className="text-gray-500 mb-6">创建你的第一个播放列表，开始收集喜欢的视频</p>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('firstPlaylistTitle')}</h2>
+            <p className="text-gray-500 mb-6">{t('firstPlaylistDesc')}</p>
             <button
               onClick={() => setIsCreatingModal(true)}
               className="px-6 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
             >
-              创建第一个列表
+              {t('createFirstList')}
             </button>
           </div>
         )}
@@ -325,7 +325,7 @@ export default function PlaylistManagerPage() {
         <div className="fixed inset-0 bg-white bg-opacity-10 backdrop-blur-lg flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">创建新播放列表</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('createNewPlaylist')}</h2>
               <button
                 onClick={handleCloseModal}
                 className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
@@ -337,13 +337,13 @@ export default function PlaylistManagerPage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  播放列表名称 <span className="text-red-500">*</span>
+                  {t('playlistName')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={newPlaylistName}
                   onChange={(e) => setNewPlaylistName(e.target.value)}
-                  placeholder="输入播放列表名称..."
+                  placeholder={t('playListNamePlaceholder')}
                   className="w-full border border-gray-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -358,12 +358,12 @@ export default function PlaylistManagerPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  描述 <span className="text-gray-400">(可选)</span>
+                  {t('description')} <span className="text-gray-400">{t('optional')}</span>
                 </label>
                 <textarea
                   value={newPlaylistDescription}
                   onChange={(e) => setNewPlaylistDescription(e.target.value)}
-                  placeholder="为你的播放列表添加描述..."
+                  placeholder={t('Enter a playlist description')}
                   rows={3}
                   className="w-full border border-gray-200 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
                 />
@@ -380,13 +380,13 @@ export default function PlaylistManagerPage() {
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 }`}
               >
-                创建播放列表
+                {t('createPlaylist')}
               </button>
               <button
                 onClick={handleCloseModal}
                 className="flex-1 py-3 text-gray-600 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
               >
-                取消
+                {t('cancel')}
               </button>
             </div>
           </div>

@@ -4,6 +4,7 @@ import type { VideoSegment } from '../store/usePlaylistStore'
 import { useNavigate } from '@tanstack/react-router'
 import { Edit, Plus, Settings, List, ChevronDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import BottomNote from '../components/BottomNote'
 
 export default function PlaylistPage() {
   const [url, setUrl] = useState('')
@@ -11,9 +12,9 @@ export default function PlaylistPage() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [editingTitle, setEditingTitle] = useState('')
   const [showPlaylistSelector, setShowPlaylistSelector] = useState(false)
-  
+
   // 使用新的 store 方法
-  const { 
+  const {
     getCurrentVideos,
     addVideo,
     removeVideo,
@@ -26,7 +27,7 @@ export default function PlaylistPage() {
     switchPlaylist,
     getCurrentPlaylist
   } = usePlaylistStore()
-  
+
   const navigate = useNavigate()
   const { t, i18n } = useTranslation()
 
@@ -37,7 +38,7 @@ export default function PlaylistPage() {
   // 如果没有当前播放列表，创建一个默认的
   useEffect(() => {
     if (!currentPlaylistId && playlists.length === 0) {
-      createPlaylist('我的播放列表')
+      createPlaylist('My playList')
     }
   }, [currentPlaylistId, playlists.length, createPlaylist])
 
@@ -47,7 +48,7 @@ export default function PlaylistPage() {
 
   // 快速创建新播放列表
   const handleQuickCreatePlaylist = () => {
-    const name = `播放列表 ${playlists.length + 1}`
+    const name = `playList ${playlists.length + 1}`
     const newId = createPlaylist(name)
     switchPlaylist(newId)
     setShowPlaylistSelector(false)
@@ -113,7 +114,7 @@ export default function PlaylistPage() {
         title: '未知视频',
         thumbnail: null
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return {
         platform: '未知平台',
@@ -218,7 +219,7 @@ export default function PlaylistPage() {
                 </span>
                 {playlists.length > 1 && <ChevronDown className="w-4 h-4" />}
               </button>
-              
+
               {showPlaylistSelector && playlists.length > 1 && (
                 <div className="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                   <div className="p-2">
@@ -226,11 +227,10 @@ export default function PlaylistPage() {
                       <button
                         key={playlist.id}
                         onClick={() => handleSwitchPlaylist(playlist.id)}
-                        className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                          playlist.id === currentPlaylistId
-                            ? 'bg-gray-100 text-gray-900 font-medium'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        }`}
+                        className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${playlist.id === currentPlaylistId
+                          ? 'bg-gray-100 text-gray-900 font-medium'
+                          : 'text-gray-700 hover:bg-gray-50'
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <span>{playlist.name}</span>
@@ -284,44 +284,7 @@ export default function PlaylistPage() {
           </div>
         </div>
 
-        {/* 当前播放列表信息卡片 */}
-        {currentPlaylist && (
-          <div className="bg-white rounded-xl p-4 mb-8 shadow-sm border border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <List className="w-6 h-6 text-gray-600" />
-                </div>
-                <div>
-                  <h2 className="font-semibold text-gray-900">{currentPlaylist.name}</h2>
-                  <p className="text-sm text-gray-500">
-                    {playlist.length} {t('videos')} • 创建于 {new Date(currentPlaylist.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {playlist.length > 0 && (
-                  <button
-                    onClick={startPlaying}
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-grey-700 transition-colors"
-                  >
-                    <div className="w-0 h-0 border-l-3 border-l-white border-y-2 border-y-transparent"></div>
-                    {t('startPlaying')}
-                  </button>
-                )}
-                <button
-                  onClick={clearAll}
-                  disabled={playlist.length === 0}
-                  className="px-3 py-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {t('clearAll')}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-12 m-24">
           {/* 左侧：添加视频表单 */}
           <div>
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-200">
@@ -341,7 +304,7 @@ export default function PlaylistPage() {
                   <input
                     className={`w-full border border-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400 transition-all duration-200 ${errors.url ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
                       }`}
-                    placeholder="粘贴视频链接..."
+                    placeholder={t('videoUrlPlaceholder')}
                     value={url}
                     onChange={(e) => {
                       setUrl(e.target.value)
@@ -438,7 +401,7 @@ export default function PlaylistPage() {
                                 </h3>
                                 <button
                                   onClick={() => startEditingTitle(index, seg.title || '')}
-                                  className="text-gray-400 hover:text-blue-500 transition-colors"
+                                  className="text-gray-400 hover:text-blue-500 transition-colors mt-2"
                                   title="编辑标题"
                                 >
                                   <Edit className="w-4 h-4" />
@@ -505,32 +468,40 @@ export default function PlaylistPage() {
                 </p>
               </div>
             )}
+            {/* 当前播放列表信息卡片 */}
+            {currentPlaylist && (
+              <div className="flex items-center justify-evenly mt-10">
+                {playlist.length > 0 && (
+                  <button
+                    onClick={startPlaying}
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-grey-700 transition-colors"
+                  >
+                    <div className="w-0 h-0 border-l-3 border-l-white border-y-2 border-y-transparent"></div>
+                    {t('startPlaying')}
+                  </button>
+                )}
+                <button
+                  onClick={clearAll}
+                  disabled={playlist.length === 0}
+                  className="px-3 py-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {t('clearAll')}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
         {/* 底部说明 */}
         <div className="mt-16 text-center">
-          <div className="inline-flex items-center gap-8 bg-white rounded-2xl px-8 py-4 shadow-sm border border-gray-200">
-            <div className="flex items-center gap-2 text-gray-600 text-sm">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <span>{t('bottomNoteMultiPlatform')}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-600 text-sm">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>{t('bottomNoteSmartSort')}</span>
-            </div>
-            <div className="flex items-center gap-2 text-gray-600 text-sm">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <span>{t('bottomNoteContinuousPlay')}</span>
-            </div>
-          </div>
+          <BottomNote t={t} />
         </div>
       </div>
-      
+
       {/* 点击外部关闭播放列表选择器 */}
       {showPlaylistSelector && (
-        <div 
-          className="fixed inset-0 z-5" 
+        <div
+          className="fixed inset-0 z-5"
           onClick={() => setShowPlaylistSelector(false)}
         />
       )}

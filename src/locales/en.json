@@ -75,7 +75,6 @@
     "playPause": "Space Play/Pause",
     "closePanel": "Esc Close panel"
   },
-
   "stretchTimer": "Stretch Timer",
   "stretchTime": "Stretch Time",
   "stretchSets": "Stretch Sets",
@@ -98,5 +97,14 @@
   "tipBreath": "Keep breathing deeply and relax your body",
   "tipGentle": "Move slowly and gently, avoid excessive force",
   "tipFocus": "Feel the muscle stretch and stay focused",
-  "tipStop": "Stop immediately if you feel discomfort or pain"
+  "tipStop": "Stop immediately if you feel discomfort or pain",
+  "createAt": "create at",
+  "playListNamePlaceholder": "Input Playlist name...",
+  "Enter a playlist description": "Enter a playlist description...",
+  "playlistManager": "List Manager",
+  "stretchCountdown": "Countdown",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "daysAgo":"daysAgo",
+  "create":"Create"
 }

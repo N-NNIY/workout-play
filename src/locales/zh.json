@@ -47,7 +47,7 @@
   "fullscreen": "全屏",
   "exitFullscreen": "退出",
   "list": "列表",
-  "jumpToVideo": "跳转到视频 {{index}}",
+  "jumpToVideo": "跳转到视频",
   "createNewPlaylist": "创建新播放列表",
   "newPlaylist": "新播放列表",
   "playlistName": "播放列表名称",
@@ -75,7 +75,8 @@
     "playPause": "Space 播放/暂停",
     "closePanel": "Esc 关闭面板"
   },
-
+  "playlistManager": "播放列表管理",
+  "stretchCountdown": "拉伸倒计时",
   "stretchTimer": "拉伸计时器",
   "stretchTime": "拉伸时间",
   "stretchSets": "拉伸组数",
@@ -98,5 +99,12 @@
   "tipBreath": "保持深呼吸，让身体自然放松",
   "tipGentle": "动作缓慢温和，避免过度用力",
   "tipFocus": "感受肌肉的伸展，保持专注",
-  "tipStop": "如有不适或疼痛请立即停止"
+  "tipStop": "如有不适或疼痛请立即停止",
+  "createAt": "创建于",
+  "playListNamePlaceholder": "输入播放列表名称...",
+  "Enter a playlist description": "输入播放列表描述...",
+  "today": "今天",
+  "yesterday": "昨天",
+  "daysAgo": "天前",
+  "create": "新建"
 }

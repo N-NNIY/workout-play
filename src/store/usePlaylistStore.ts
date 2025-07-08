@@ -26,7 +26,7 @@ interface PlaylistState {
   deletePlaylist: (id: string) => void
   renamePlaylist: (id: string, name: string) => void
   setCurrentPlaylist: (id: string) => void
-  switchPlaylist: (id: string) => void  // 添加这个方法
+  switchPlaylist: (id: string) => void 
 
   // 视频管理
   addVideo: (video: VideoSegment) => void

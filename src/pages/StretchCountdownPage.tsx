@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Settings, Volume2, VolumeX, Activity, Timer, Repeat } from 'lucide-react';
 import { t } from 'i18next';
-
+import { X } from 'lucide-react';
 const StretchCountdownPage = () => {
   const [timeLeft, setTimeLeft] = useState<number>(60);
   const [initialTime, setInitialTime] = useState<number>(60);
@@ -16,14 +16,16 @@ const StretchCountdownPage = () => {
   const [isResting, setIsResting] = useState<boolean>(false);
   const [restTimeLeft, setRestTimeLeft] = useState<number>(5);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const [showTimeModal, setShowTimeModal] = useState<boolean>(false);
+  const [showSetsModal, setShowSetsModal] = useState<boolean>(false);
+  const [showRestModal, setShowRestModal] = useState<boolean>(false);
   const presetTimes = [
-    { label: '30秒', value: 30 },
-    { label: '1分钟', value: 60 },
-    { label: '2分钟', value: 120 },
-    { label: '3分钟', value: 180 },
-    { label: '5分钟', value: 300 },
-    { label: '10分钟', value: 600 }
+    { label: '30 s', value: 30 },
+    { label: '1 min', value: 60 },
+    { label: '2 min', value: 120 },
+    { label: '3 min', value: 180 },
+    { label: '5 min', value: 300 },
+    { label: '10 min', value: 600 }
   ];
 
   const presetSets = [1, 2, 3, 4, 5, 6];
@@ -134,26 +136,35 @@ const StretchCountdownPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-stone-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-4/5 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-stone-200/50 p-8 space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center p-4">
+      {/* 模糊背景遮罩 */}
+      {(showTimeModal || showSetsModal || showRestModal) && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" onClick={() => {
+          setShowTimeModal(false);
+          setShowSetsModal(false); 
+          setShowRestModal(false);
+        }} />
+      )}
+
+      <div className={`w-full max-w-4/5 bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-gray-200/50 p-8 space-y-8 transition-all duration-300 ${(showTimeModal || showSetsModal || showRestModal) ? 'blur-sm' : ''}`}>
         {/* 顶部栏 */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold flex items-center gap-3 text-stone-800">
-            <div className="p-2 bg-stone-100 rounded-xl">
-              <Activity className="w-6 h-6 text-stone-600" />
+          <h1 className="text-2xl font-bold flex items-center gap-3 text-gray-800">
+            <div className="p-2 bg-gray-100 rounded-xl">
+              <Activity className="w-6 h-6 text-gray-600" />
             </div>
             {t('stretchTimer')}
           </h1>
           <div className="flex gap-2">
             <button
               onClick={() => setSoundEnabled(!soundEnabled)}
-              className="p-3 bg-stone-100 hover:bg-stone-200 rounded-xl text-stone-600 transition-all duration-200"
+              className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-600 transition-all duration-200"
             >
               {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
             </button>
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="p-3 bg-stone-100 hover:bg-stone-200 rounded-xl text-stone-600 transition-all duration-200"
+              className="p-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-600 transition-all duration-200"
             >
               <Settings className="w-5 h-5" />
             </button>
@@ -162,83 +173,62 @@ const StretchCountdownPage = () => {
 
         {/* 设置面板 */}
         {showSettings && (
-          <div className="bg-stone-50/80 border border-stone-200 rounded-2xl p-6 space-y-6">
+          <div className="bg-gray-50/80 border border-gray-200 rounded-2xl p-6 space-y-6">
             {/* 时间设置 */}
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 <Timer className="w-4 h-4" />
                 {t('stretchTime')}
               </h3>
               <div className="grid grid-cols-3 gap-2">
-                {presetTimes.map((preset) => (
-                  <button
-                    key={preset.value}
-                    onClick={() => setNewTime(preset.value)}
-                    className={`p-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      selectedTime === preset.value
-                        ? 'bg-stone-600 text-white shadow-lg scale-105'
-                        : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 hover:border-stone-300'
-                    }`}
-                  >
-                    {preset.label}
-                  </button>
-                ))}
+                <button
+                  onClick={() => setShowTimeModal(true)}
+                  className="col-span-3 p-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
+                >
+                  选择时间: {presetTimes.find(p => p.value === selectedTime)?.label || '1 min'}
+                </button>
               </div>
             </div>
 
             {/* 组数设置 */}
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-stone-700 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 <Repeat className="w-4 h-4" />
                 {t('stretchSets')}
               </h3>
-              <div className="grid grid-cols-6 gap-2">
-                {presetSets.map((sets) => (
-                  <button
-                    key={sets}
-                    onClick={() => setNewSets(sets)}
-                    className={`p-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      totalSets === sets
-                        ? 'bg-stone-600 text-white shadow-lg scale-105'
-                        : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 hover:border-stone-300'
-                    }`}
-                  >
-                    {sets}{t('sets')}
-                  </button>
-                ))}
+              <div className="grid grid-cols-1 gap-2">
+                <button
+                  onClick={() => setShowSetsModal(true)}
+                  className="p-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
+                >
+                  选择组数: {totalSets} {t('sets')}
+                </button>
               </div>
             </div>
 
             {/* 休息时间设置 */}
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-stone-700">{t('restTimeBetweenSets')}</h3>
-              <div className="grid grid-cols-3 gap-2">
-                {presetRestTimes.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => setNewRestTime(time)}
-                    className={`p-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      restTime === time
-                        ? 'bg-stone-600 text-white shadow-lg scale-105'
-                        : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50 hover:border-stone-300'
-                    }`}
-                  >
-                    {time}秒
-                  </button>
-                ))}
+              <h3 className="text-sm font-semibold text-gray-700">{t('restTimeBetweenSets')}</h3>
+              <div className="grid grid-cols-1 gap-2">
+                <button
+                  onClick={() => setShowRestModal(true)}
+                  className="p-3 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md"
+                >
+                  选择休息时间: {restTime} s
+                </button>
               </div>
             </div>
           </div>
         )}
 
         {/* 组数显示 */}
-        <div className="text-center bg-stone-50/50 rounded-2xl p-4">
-          <div className="text-lg font-medium text-stone-600 mb-2">
-            第 {currentSet} 组 / 共 {totalSets} 组
+        <div className="text-center bg-gray-50/50 rounded-2xl p-4">
+          <div className="text-lg font-medium text-gray-600 mb-2">
+            {currentSet} {t('sets')} / {totalSets} {t('sets')}
           </div>
-          <div className="w-full bg-stone-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 rounded-full h-2">
             <div
-              className="h-full bg-stone-400 rounded-full transition-all duration-500"
+              className="h-full bg-gray-500 rounded-full transition-all duration-500"
               style={{ width: `${getTotalProgress()}%` }}
             ></div>
           </div>
@@ -246,20 +236,20 @@ const StretchCountdownPage = () => {
 
         {/* 时间显示 */}
         <div className="text-center">
-          <div className="text-6xl font-bold text-stone-800 mb-3">
+          <div className="text-6xl font-bold text-gray-800 mb-3">
             {isCompleted ? '🎉' : isResting ? formatTime(restTimeLeft) : formatTime(timeLeft)}
           </div>
-          <div className="text-lg text-stone-600 mb-2">
-            {isCompleted 
-              ? '全部拉伸完成！' 
-              : isResting 
-                ? '休息中...' 
-                : isRunning 
-                  ? '正在拉伸...' 
-                  : '准备开始'}
+          <div className="text-lg text-gray-600 mb-2">
+            {t(isCompleted
+              ? 'completedAll'
+              : isResting
+                ? 'resting'
+                : isRunning
+                  ? 'stretching'
+                  : 'readyToStart')}
           </div>
           {isResting && (
-            <div className="text-sm text-stone-500">
+            <div className="text-sm text-gray-500">
               {t('nextSet')}
             </div>
           )}
@@ -267,16 +257,15 @@ const StretchCountdownPage = () => {
 
         {/* 当前进度条 */}
         <div className="space-y-2">
-          <div className="w-full bg-stone-200 rounded-full h-4 overflow-hidden">
+          <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
             <div
-              className={`h-full transition-all duration-1000 ${
-                isResting ? 'bg-blue-400' : 'bg-stone-500'
-              }`}
+              className={`h-full transition-all duration-1000 ${isResting ? 'bg-blue-400' : 'bg-gray-600'
+                }`}
               style={{ width: `${getProgress()}%` }}
             ></div>
           </div>
-          <p className="text-center text-sm text-stone-500">
-            {isResting ? '休息' : '拉伸'}{t('progress')}: {Math.round(getProgress())}%
+          <p className="text-center text-sm text-gray-500">
+            {t(isResting ? 'rest' : 'stretch')} {t('progress')}: {Math.round(getProgress())}%
           </p>
         </div>
 
@@ -284,13 +273,12 @@ const StretchCountdownPage = () => {
         <div className="flex gap-4">
           <button
             onClick={toggleTimer}
-            className={`flex-1 py-4 rounded-2xl font-semibold flex items-center justify-center gap-3 transition-all duration-200 text-lg ${
-              isCompleted
+            className={`flex-1 py-4 rounded-2xl font-semibold flex items-center justify-center gap-3 transition-all duration-200 text-lg transform hover:scale-105 ${isCompleted
                 ? 'bg-green-500 text-white hover:bg-green-600 shadow-lg hover:shadow-xl'
                 : isRunning
-                ? 'bg-red-500 text-white hover:bg-red-600 shadow-lg hover:shadow-xl'
-                : 'bg-stone-600 text-white hover:bg-stone-700 shadow-lg hover:shadow-xl'
-            }`}
+                  ? 'bg-red-500 text-white hover:bg-red-600 shadow-lg hover:shadow-xl'
+                  : 'bg-gray-700 text-white hover:bg-gray-800 shadow-lg hover:shadow-xl'
+              }`}
           >
             {isCompleted ? (
               <>
@@ -311,7 +299,7 @@ const StretchCountdownPage = () => {
           </button>
           <button
             onClick={resetTimer}
-            className="px-6 py-4 bg-stone-100 hover:bg-stone-200 rounded-2xl text-stone-700 font-semibold flex items-center gap-2 transition-all duration-200"
+            className="px-6 py-4 bg-gray-100 hover:bg-gray-200 rounded-2xl text-gray-700 font-semibold flex items-center gap-2 transition-all duration-200 transform hover:scale-105 hover:shadow-md"
           >
             <RotateCcw className="w-5 h-5" />
             {t('reset')}
@@ -319,31 +307,172 @@ const StretchCountdownPage = () => {
         </div>
 
         {/* 拉伸提示 */}
-        <div className="bg-stone-50/50 border border-stone-200 rounded-2xl p-6 space-y-3 text-sm text-stone-600">
-          <h3 className="font-semibold flex items-center gap-2 text-stone-700 text-base">
-            <Activity className="w-5 h-5 text-stone-500" />
+        <div className="bg-gray-50/50 border border-gray-200 rounded-2xl p-6 space-y-3 text-sm text-gray-600">
+          <h3 className="font-semibold flex items-center gap-2 text-gray-700 text-base">
+            <Activity className="w-5 h-5 text-gray-500" />
             {t('stretchTipsTitle')}
           </h3>
           <div className="space-y-2">
             <p className="flex items-start gap-2">
-              <span className="text-stone-400 mt-0.5">•</span>
+              <span className="text-gray-400 mt-0.5">•</span>
               <span>{t('tipBreath')}</span>
             </p>
             <p className="flex items-start gap-2">
-              <span className="text-stone-400 mt-0.5">•</span>
+              <span className="text-gray-400 mt-0.5">•</span>
               <span>{t('tipGentle')}</span>
             </p>
             <p className="flex items-start gap-2">
-              <span className="text-stone-400 mt-0.5">•</span>
+              <span className="text-gray-400 mt-0.5">•</span>
               <span>{t('tipFocus')}</span>
             </p>
             <p className="flex items-start gap-2">
-              <span className="text-stone-400 mt-0.5">•</span>
+              <span className="text-gray-400 mt-0.5">•</span>
               <span>{t('tipStop')}</span>
             </p>
           </div>
         </div>
       </div>
+
+      {/* 时间选择弹窗 */}
+      {showTimeModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 p-8 max-w-md w-full transform transition-all duration-300 scale-100">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Timer className="w-5 h-5 text-gray-600" />
+                {t('selectStretchTime')}
+              </h2>
+              <button
+                onClick={() => setShowTimeModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {presetTimes.map((preset) => (
+                <button
+                  key={preset.value}
+                  onClick={() => {
+                    setNewTime(preset.value);
+                    setShowTimeModal(false);
+                  }}
+                  className={`p-4 rounded-2xl text-base font-medium transition-all duration-200 transform hover:scale-105 ${selectedTime === preset.value
+                      ? 'bg-gray-800 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md border border-gray-200'
+                    }`}
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowTimeModal(false)}
+                className="w-full py-3 bg-gray-800 text-white rounded-2xl font-medium hover:bg-gray-900 transition-colors"
+              >
+                {t('confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 组数选择弹窗 */}
+      {showSetsModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 p-8 max-w-md w-full transform transition-all duration-300 scale-100">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Repeat className="w-5 h-5 text-gray-600" />
+                选择拉伸组数
+              </h2>
+              <button
+                onClick={() => setShowSetsModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              {presetSets.map((sets) => (
+                <button
+                  key={sets}
+                  onClick={() => {
+                    setNewSets(sets);
+                    setShowSetsModal(false);
+                  }}
+                  className={`p-4 rounded-2xl text-base font-medium transition-all duration-200 transform hover:scale-105 ${totalSets === sets
+                      ? 'bg-gray-800 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md border border-gray-200'
+                    }`}
+                >
+                  {sets} 组
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowSetsModal(false)}
+                className="w-full py-3 bg-gray-800 text-white rounded-2xl font-medium hover:bg-gray-900 transition-colors"
+              >
+                确认
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 休息时间选择弹窗 */}
+      {showRestModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 p-8 max-w-md w-full transform transition-all duration-300 scale-100">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <Timer className="w-5 h-5 text-gray-600" />
+                选择休息时间
+              </h2>
+              <button
+                onClick={() => setShowRestModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {presetRestTimes.map((time) => (
+                <button
+                  key={time}
+                  onClick={() => {
+                    setNewRestTime(time);
+                    setShowRestModal(false);
+                  }}
+                  className={`p-4 rounded-2xl text-base font-medium transition-all duration-200 transform hover:scale-105 ${restTime === time
+                      ? 'bg-gray-800 text-white shadow-lg'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md border border-gray-200'
+                    }`}
+                >
+                  {time} 秒
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => setShowRestModal(false)}
+                className="w-full py-3 bg-gray-800 text-white rounded-2xl font-medium hover:bg-gray-900 transition-colors"
+              >
+                确认
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
