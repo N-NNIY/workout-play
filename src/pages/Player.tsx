@@ -98,15 +98,21 @@ export default function PlayerPage() {
 
 
 return (
-  <div className={`min-h-screen bg-gray-50 ${isFullscreen ? 'p-0' : 'p-4 lg:p-6'}`}>
-    <div className="max-w-7xl mx-auto">
+  <div className={`min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 ${isFullscreen ? 'p-0' : 'p-4 lg:p-6'} relative overflow-hidden`}>
+    {/* 动态背景光效 */}
+    <div className="fixed inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-cyan-400/20 to-emerald-400/20 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-emerald-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+    </div>
+
+    <div className="max-w-7xl mx-auto relative z-10">
       {/* 顶部导航栏 */}
       {!isFullscreen && (
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate({ to: '/' })}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors px-3 py-2 rounded-lg hover:bg-white"
+              className="flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 px-4 py-2 rounded-xl hover:bg-white/5 backdrop-blur-sm border border-white/10 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/25 hover:scale-105"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="hidden sm:inline">{t('backToPlaylist')}</span>
@@ -116,10 +122,10 @@ return (
           {/* 移动端播放列表按钮 */}
           <button
             onClick={() => setShowPlaylist(true)}
-            className="lg:hidden flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+            className="lg:hidden flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-emerald-500 text-white rounded-xl hover:from-cyan-600 hover:to-emerald-600 transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/35 hover:scale-105 border border-white/20"
           >
             <List className="w-4 h-4" />
-            <span className="text-sm">播放列表</span>
+            <span className="text-sm font-medium">播放列表</span>
           </button>
         </div>
       )}
@@ -129,24 +135,24 @@ return (
         <div className={`${!isFullscreen ? 'lg:col-span-3' : 'col-span-4'}`}>
           {/* 播放器信息卡片 */}
           {!isFullscreen && (
-            <div className="bg-white rounded-xl shadow-sm border p-4 mb-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <Monitor className="w-5 h-5 text-gray-600" />
+            <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 p-6 mb-6 shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-emerald-400 rounded-xl flex items-center justify-center shadow-lg shadow-cyan-500/25">
+                    <Monitor className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="font-semibold text-gray-900">{currentPlaylist.name}</h2>
-                    <p className="text-sm text-gray-500">
+                    <h2 className="font-semibold text-xl text-white">{currentPlaylist.name}</h2>
+                    <p className="text-sm text-gray-300">
                       {currentIndex + 1} / {playlist.length} 
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    playbackState === 'playing' ? 'bg-green-100 text-green-700' :
-                    playbackState === 'paused' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'
+                  <div className={`px-4 py-2 rounded-xl text-sm font-medium border backdrop-blur-sm transition-all duration-300 ${
+                    playbackState === 'playing' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/50 shadow-lg shadow-emerald-500/25' :
+                    playbackState === 'paused' ? 'bg-yellow-500/20 text-yellow-300 border-yellow-400/50 shadow-lg shadow-yellow-500/25' : 'bg-gray-500/20 text-gray-300 border-gray-400/50'
                   }`}>
                     {t(playbackState === 'playing' ? 'playing' :
                       playbackState === 'paused' ? 'pause' : 'playing')}
@@ -156,13 +162,13 @@ return (
 
               {/* 进度条 */}
               <div>
-                <div className="flex justify-between text-xs text-gray-500 mb-2">
+                <div className="flex justify-between text-sm text-gray-300 mb-3">
                   <span>{t('playProgress')}</span>
-                  <span>{Math.round(getProgress())}%</span>
+                  <span className="font-medium">{Math.round(getProgress())}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-white/10 rounded-full h-3 backdrop-blur-sm">
                   <div
-                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-cyan-400 to-emerald-400 h-3 rounded-full transition-all duration-300 shadow-lg shadow-cyan-500/25"
                     style={{ width: `${getProgress()}%` }}
                   />
                 </div>
@@ -171,7 +177,7 @@ return (
           )}
 
           {/* 视频播放器 */}
-          <div className={`relative ${isFullscreen ? 'h-screen' : 'bg-white rounded-xl shadow-sm border overflow-hidden'}`}>
+          <div className={`relative ${isFullscreen ? 'h-screen' : 'bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 overflow-hidden shadow-2xl'}`}>
             <div className={`relative ${isFullscreen ? 'h-full' : 'aspect-video'}`}>
               <VideoPlayer
                 key={`${currentVideo.url}-${currentIndex}`}
@@ -182,17 +188,17 @@ return (
 
               {/* 全屏模式控制栏 */}
               {isFullscreen && (
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-white">
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-8">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 text-white">
                     <div className="flex-1">
-                      <h2 className="text-xl font-semibold flex items-center gap-3 mb-2">
+                      <h2 className="text-2xl font-bold flex items-center gap-4 mb-3">
                         {getVideoInfo(currentVideo.url).icon}
                         <span>{currentVideo.title || `视频 ${currentIndex + 1}`}</span>
                       </h2>
-                      <p className="text-sm opacity-80 flex items-center gap-2">
-                        <span>{currentPlaylist.name}</span>
+                      <p className="text-sm opacity-90 flex items-center gap-3">
+                        <span className="px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">{currentPlaylist.name}</span>
                         <span>•</span>
-                        <span>{currentIndex + 1} / {playlist.length}</span>
+                        <span className="font-medium">{currentIndex + 1} / {playlist.length}</span>
                       </p>
                     </div>
                   </div>
@@ -205,15 +211,15 @@ return (
         {/* 右侧播放列表 (桌面端) */}
         {!isFullscreen && (
           <div className="hidden lg:block lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border sticky top-6">
-              <div className="p-4 border-b border-gray-100">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2 mb-2">
-                  <List className="w-5 h-5" />
+            <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 sticky top-6 shadow-2xl hover:shadow-cyan-500/10 transition-all duration-300">
+              <div className="p-6 border-b border-white/10">
+                <h3 className="font-semibold text-lg text-white flex items-center gap-3 mb-3">
+                  <List className="w-5 h-5 text-cyan-400" />
                   {t('playlist')}
                 </h3>
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <span className="flex items-center gap-1">
-                    <Monitor className="w-4 h-4" />
+                <div className="flex items-center gap-4 text-sm text-gray-300">
+                  <span className="flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                    <Monitor className="w-4 h-4 text-emerald-400" />
                     {playlist.length} {t('videos')}
                   </span>
                 </div>
@@ -224,21 +230,27 @@ return (
                   <div
                     key={index}
                     onClick={() => jumpToVideo(index)}
-                    className={`p-3 cursor-pointer transition-colors hover:bg-gray-50 border-b border-gray-50 last:border-b-0 ${
-                      index === currentIndex ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                    className={`p-4 cursor-pointer transition-all duration-300 hover:bg-white/10 border-b border-white/5 last:border-b-0 hover:scale-105 ${
+                      index === currentIndex ? 'bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 border-l-4 border-l-cyan-400 shadow-lg shadow-cyan-500/25' : ''
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                      <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                        index === currentIndex 
+                          ? 'bg-gradient-to-br from-cyan-400 to-emerald-400 shadow-lg shadow-cyan-500/25' 
+                          : 'bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20'
+                      }`}>
                         {index === currentIndex ? (
-                          <Play className="w-4 h-4 text-blue-500" />
+                          <Play className="w-5 h-5 text-white" />
                         ) : (
-                          <span className="text-xs font-medium text-gray-500">{index + 1}</span>
+                          <span className="text-sm font-medium text-gray-300">{index + 1}</span>
                         )}
                       </div>
                       
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800 truncate flex items-center gap-2">
+                        <p className={`text-sm font-medium truncate flex items-center gap-2 transition-colors duration-300 ${
+                          index === currentIndex ? 'text-white' : 'text-gray-300 hover:text-white'
+                        }`}>
                           {getVideoInfo(video.url).icon}
                           {video.title || `视频 ${index + 1}`}
                         </p>
@@ -255,21 +267,21 @@ return (
       {/* 移动端播放列表侧边栏 */}
       {showPlaylist && !isFullscreen && (
         <>
-          <div className="fixed right-0 top-0 h-full w-80 bg-white border-l shadow-xl z-50 lg:hidden">
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex justify-between items-center mb-3">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  <List className="w-5 h-5" />
+          <div className="fixed right-0 top-0 h-full w-80 bg-slate-800/95 backdrop-blur-xl border-l border-white/10 shadow-2xl z-50 lg:hidden">
+            <div className="p-6 border-b border-white/10">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="font-semibold text-lg text-white flex items-center gap-3">
+                  <List className="w-5 h-5 text-cyan-400" />
                   {t('playlist')}
                 </h3>
                 <button
                   onClick={() => setShowPlaylist(false)}
-                  className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all duration-300 backdrop-blur-sm border border-white/10 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/25"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <p className="text-sm text-gray-500">{currentPlaylist.name}</p>
+              <p className="text-sm text-gray-300 px-3 py-2 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">{currentPlaylist.name}</p>
             </div>
             
             <div className="overflow-y-auto h-full pb-20">
@@ -280,21 +292,27 @@ return (
                     jumpToVideo(index);
                     setShowPlaylist(false);
                   }}
-                  className={`p-4 cursor-pointer transition-colors hover:bg-gray-50 border-b border-gray-50 ${
-                    index === currentIndex ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+                  className={`p-4 cursor-pointer transition-all duration-300 hover:bg-white/10 border-b border-white/5 hover:scale-105 ${
+                    index === currentIndex ? 'bg-gradient-to-r from-cyan-500/20 to-emerald-500/20 border-l-4 border-l-cyan-400 shadow-lg shadow-cyan-500/25' : ''
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                    <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                      index === currentIndex 
+                        ? 'bg-gradient-to-br from-cyan-400 to-emerald-400 shadow-lg shadow-cyan-500/25' 
+                        : 'bg-white/10 backdrop-blur-sm border border-white/20'
+                    }`}>
                       {index === currentIndex ? (
-                        <Play className="w-4 h-4 text-blue-500" />
+                        <Play className="w-5 h-5 text-white" />
                       ) : (
-                        <span className="text-xs font-medium text-gray-500">{index + 1}</span>
+                        <span className="text-sm font-medium text-gray-300">{index + 1}</span>
                       )}
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800 truncate flex items-center gap-2">
+                      <p className={`text-sm font-medium truncate flex items-center gap-2 transition-colors duration-300 ${
+                        index === currentIndex ? 'text-white' : 'text-gray-300'
+                      }`}>
                         {getVideoInfo(video.url).icon}
                         {video.title || `视频 ${index + 1}`}
                       </p>
@@ -306,7 +324,7 @@ return (
           </div>
           
           <div
-            className="fixed inset-0 bg-black/20 z-40 lg:hidden"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
             onClick={() => setShowPlaylist(false)}
           />
         </>

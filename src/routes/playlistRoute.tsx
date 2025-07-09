@@ -4,6 +4,6 @@ import { rootRoute } from './rootRoute'
 
 export const playlistRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  path: '/playlist',
   component: PlaylistPage,
 })
