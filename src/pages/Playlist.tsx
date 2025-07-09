@@ -84,45 +84,97 @@ export default function PlaylistPage() {
   }
 
   // 获取视频信息（标题、缩略图、时长）
-  const getVideoInfo = async (url: string) => {
-    try {
-      // 这里模拟获取视频信息的过程
-      // 在实际项目中，你需要使用相应的 API
-      if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        // YouTube API 或 oEmbed
-        const videoId = extractYouTubeId(url)
-        return {
-          platform: 'YouTube',
-          title: `YouTube 视频 ${videoId}`,
-          thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
+// 简化版本：使用 oEmbed API 获取视频标题
+const getVideoInfo = async (url: string) => {
+  try {
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      try {
+        // 使用 YouTube oEmbed API
+        const response = await fetch(
+          `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`
+        )
+        
+        if (response.ok) {
+          const data = await response.json()
+          return {
+            platform: 'YouTube',
+            title: data.title,
+            thumbnail: data.thumbnail_url,
+            author: data.author_name
+          }
         }
-      } else if (url.includes('bilibili.com')) {
-        return {
-          platform: 'B站',
-          title: 'B站视频',
-          thumbnail: null
-        }
-      } else if (url.includes('vimeo.com')) {
-        return {
-          platform: 'Vimeo',
-          title: 'Vimeo 视频',
-          thumbnail: null
-        }
+      } catch (error) {
+        console.error('YouTube oEmbed 获取失败:', error)
       }
+      
+      // 备用方案：解析 URL 获取视频ID
+      const videoId = extractYouTubeId(url)
       return {
-        platform: '视频文件',
-        title: '未知视频',
+        platform: 'YouTube',
+        title: `YouTube 视频 (${videoId})`,
+        thumbnail: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
+      }
+      
+    } else if (url.includes('vimeo.com')) {
+      try {
+        // 使用 Vimeo oEmbed API
+        const response = await fetch(
+          `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`
+        )
+        
+        if (response.ok) {
+          const data = await response.json()
+          return {
+            platform: 'Vimeo',
+            title: data.title,
+            thumbnail: data.thumbnail_url,
+            author: data.author_name
+          }
+        }
+      } catch (error) {
+        console.error('Vimeo oEmbed 获取失败:', error)
+      }
+      
+      return {
+        platform: 'Vimeo',
+        title: 'Vimeo 视频',
         thumbnail: null
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+      
+    } else if (url.includes('bilibili.com')) {
+      // B站暂时使用占位符，因为需要处理跨域问题
       return {
-        platform: '未知平台',
-        title: '视频标题',
+        platform: 'B站',
+        title: 'B站视频',
+        thumbnail: null
+      }
+      
+    } else if (url.match(/\.(mp4|webm|ogg)$/i)) {
+      // 直接视频文件
+      const filename = url.split('/').pop()?.split('.')[0] || 'video'
+      return {
+        platform: '视频文件',
+        title: filename,
         thumbnail: null
       }
     }
+    
+    return {
+      platform: '未知平台',
+      title: '视频',
+      thumbnail: null
+    }
+    
+  } catch (error) {
+    console.error('获取视频信息失败:', error)
+    return {
+      platform: '未知平台',
+      title: '获取标题失败',
+      thumbnail: null
+    }
   }
+}
+
 
   // 提取YouTube视频ID
   const extractYouTubeId = (url: string) => {
@@ -204,9 +256,7 @@ export default function PlaylistPage() {
         {/* 顶部导航栏 */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold text-gray-900">
-              {t('playlist')}
-            </h1>
+            <img src="./logo.png" alt="logo" className="w-8 h-8" />
             {/* 播放列表选择器 */}
             <div className="relative">
               <button
